@@ -1,4 +1,8 @@
 import * as THREE from 'three';
+//texture
+const loader = new THREE.TextureLoader();
+const planet_texture = await loader.load ("./textures/jupiter_texE.png");
+planet_texture.colorSpace = THREE.SRGBColorSpace;
 
 // Planet class for Team C
 export class PlanetC {
@@ -11,15 +15,20 @@ export class PlanetC {
         //Create planet group
         this.group = new THREE.Group()
 
+
         // Create planet
         //STEP 1:
         //TODO: Create a planet using THREE.SphereGeometry (Radius must be between 1.5 and 2).
         //TODO: Give it a custom material using THREE.MeshStandardMaterial.
         //TODO: Use castShadow and receiveShadow on the mesh and all future ones so they can cast and receive shadows.
         //TODO: Add the planet mesh to the planet group.
+        // https://www.solarsystemscope.com/textures/ // cool textures
         this.sphere = new THREE.Mesh(
             new THREE.SphereGeometry(1.6, 32, 16 ),
-            new THREE.MeshBasicMaterial( {color: 0x7FFFD4,})
+            new THREE.MeshBasicMaterial( {
+                // color: 0x7FFFD4,
+                map: planet_texture
+            })
         )
         //add glow effect
         this.glowSphere = new THREE.SphereGeometry(1.8, 32, 16);
