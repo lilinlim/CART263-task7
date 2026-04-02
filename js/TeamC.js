@@ -17,7 +17,26 @@ export class PlanetC {
         //TODO: Give it a custom material using THREE.MeshStandardMaterial.
         //TODO: Use castShadow and receiveShadow on the mesh and all future ones so they can cast and receive shadows.
         //TODO: Add the planet mesh to the planet group.
-
+        this.sphere = new THREE.Mesh(
+            new THREE.SphereGeometry(1.6, 32, 16 ),
+            new THREE.MeshBasicMaterial( {color: 0x7FFFD4,})
+        )
+        //add glow effect
+        this.glowSphere = new THREE.SphereGeometry(1.8, 32, 16);
+        this.glowMaterial = new THREE.MeshBasicMaterial({
+            color: 0xFF69B4,
+            transparent: true,
+            opacity: 0.2
+        })
+        this.glow = new THREE.Mesh(this.glowSphere, this.glowMaterial);
+        //add glow effect 2!!
+        this.glowSphere2 = new THREE.SphereGeometry(2, 32, 16);
+        this.glowMaterial2 = new THREE.MeshBasicMaterial({
+            color: 0xFF69B4,
+            transparent: true,
+            opacity: 0.1
+        })
+        this.glow2 = new THREE.Mesh(this.glowSphere2, this.glowMaterial2);
         //STEP 2: 
         //TODO: Add from 1 to 3 orbiting moons to the planet group. 
         //TODO: The moons should rotate around the planet just like the planet group rotates around the Sun.
@@ -54,7 +73,7 @@ export class PlanetC {
         //STEP 4:
         //TODO: Use raycasting in the click() method below to detect clicks on the models, and make an animation happen when a model is clicked.
         //TODO: Use your imagination and creativity!
-
+        this.group.add(this.sphere, this.glow, this.glow2);
         this.scene.add(this.group);
     }
 
