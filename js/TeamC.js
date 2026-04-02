@@ -4,6 +4,10 @@ const loader = new THREE.TextureLoader();
 const planet_texture = await loader.load ("./textures/jupiter_texE.png");
 planet_texture.colorSpace = THREE.SRGBColorSpace;
 
+const loader2 = new THREE.TextureLoader();
+const clouds_texture = await loader2.load ("./textures/8k_earth_clouds.png");
+clouds_texture.colorSpace = THREE.SRGBColorSpace;
+
 // Planet class for Team C
 export class PlanetC {
     constructor(scene, orbitRadius, orbitSpeed) {
@@ -30,18 +34,28 @@ export class PlanetC {
                 map: planet_texture
             })
         )
+        // add clouds effect?
+        this.cloud = new THREE.Mesh(
+            new THREE.SphereGeometry(1.7, 32, 16 ),
+            new THREE.MeshBasicMaterial( {
+                // color: 0x7FFFD4,
+                map: clouds_texture,
+                transparent: true,
+                opacity: 0.1
+            })
+        )
         //add glow effect
         this.glowSphere = new THREE.SphereGeometry(1.8, 32, 16);
         this.glowMaterial = new THREE.MeshBasicMaterial({
-            color: 0xFF69B4,
+            // color: 'aquamarine',
             transparent: true,
-            opacity: 0.2
+            opacity: 0.1
         })
         this.glow = new THREE.Mesh(this.glowSphere, this.glowMaterial);
         //add glow effect 2!!
-        this.glowSphere2 = new THREE.SphereGeometry(2, 32, 16);
+        this.glowSphere2 = new THREE.SphereGeometry(1.9, 32, 16);
         this.glowMaterial2 = new THREE.MeshBasicMaterial({
-            color: 0xFF69B4,
+            color: 'hotpink',
             transparent: true,
             opacity: 0.1
         })
@@ -82,7 +96,7 @@ export class PlanetC {
         //STEP 4:
         //TODO: Use raycasting in the click() method below to detect clicks on the models, and make an animation happen when a model is clicked.
         //TODO: Use your imagination and creativity!
-        this.group.add(this.sphere, this.glow, this.glow2);
+        this.group.add(this.sphere, this.cloud, this.glow, this.glow2);
         this.scene.add(this.group);
     }
 
