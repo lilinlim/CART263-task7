@@ -64,12 +64,23 @@ export class PlanetC {
         //TODO: Add from 1 to 3 orbiting moons to the planet group. 
         //TODO: The moons should rotate around the planet just like the planet group rotates around the Sun.
         //make 3 moons and make them orbit around planet c
-        //creates 3 moons with random sizes, colors, and orbit speeds
+        //creates 3 moons distict moons, colors, and orbit speeds and radii
+        const loader = new THREE.TextureLoader();
+        //CHANGE TEXTURE 
+        const moonTexture = loader.load('js/clouds.jpg');
+        moonTexture.colorSpace = THREE.SRGBColorSpace; // Set the color space to sRGB
+
         for (let i = 0; i < 3; i++) {
-            //creates a moon with random size and color
             const moonGeometry = new THREE.SphereGeometry(0.3 + Math.random() * 0.2, 16, 16);
-            //creates a material with random color
-            const moonMaterial = new THREE.MeshStandardMaterial({ color: Math.random() * 0xffffff });
+            //use the texture map with a neutral base color so moons do not become too dark
+            const moonMaterial = new THREE.MeshStandardMaterial({
+                map: moonTexture,
+                color: 0xffffff,
+                roughness: 0.8,
+                metalness: 0.0,
+                emissive: 0x222222,
+                emissiveIntensity: 0.35
+            });
             //creates the moon mesh and sets it to cast and receive shadows
             const moon = new THREE.Mesh(moonGeometry, moonMaterial);
             //sets the moon to cast and receive shadows
@@ -83,10 +94,14 @@ export class PlanetC {
             //stores the moon's orbit radius, speed, and initial angle in userData for use in the update method
             moon.userData = { orbitRadius: moonOrbitRadius, orbitSpeed: moonOrbitSpeed, angle: Math.random() * Math.PI * 2 };
             this.group.add(moon);
-        } // we make the moons orbit around the planet in the update method 
-
-
-
+        } // make the moons orbit around the planet in the update method 
+        //make moons cast a shadoe on the planet
+        this.group.children.forEach(child => {
+            if (child !== this.sphere) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+            }
+        }); // we make the moons orbit around the planet in the update method 
 
 
         //STEP 3:
@@ -123,6 +138,7 @@ export class PlanetC {
 
     click(mouse, scene, camera) {
         //TODO: Do the raycasting here.
+        
     }
 }
 
