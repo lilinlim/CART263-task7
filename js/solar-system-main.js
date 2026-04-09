@@ -43,7 +43,7 @@ for (let i = 0; i < starsCount * 3; i += 3) {
     const r = 150 + Math.random() * 100;
     const theta = Math.random() * Math.PI * 2;
     const phi = Math.random() * Math.PI * 2;
-    
+
     starsPositions[i] = Math.sin(theta) * Math.cos(phi) * r;
     starsPositions[i + 1] = Math.sin(theta) * Math.sin(phi) * r;
     starsPositions[i + 2] = Math.cos(theta) * r;
@@ -86,20 +86,20 @@ planets.push(planetF);
 let elapsedTime = 0;
 function animate(timer) {
     requestAnimationFrame(animate);
-    
-    const delta = 0.001*(timer - elapsedTime) ;
+
+    const delta = 0.001 * (timer - elapsedTime);
     console.log(delta)
     elapsedTime = timer;
-    
+
     // Update sun
     sun.update(timer);
-    
+
     // Rotate stars slowly
-    stars.rotation.y += 0.1*delta;
-    
+    stars.rotation.y += 0.1 * delta;
+
     // Update all planets (this handles planet orbit, moon orbits, and critter animations)
     planets.forEach(planet => planet.update(delta));
-    
+
     controls.update();
     renderer.render(scene, camera);
 }
@@ -119,7 +119,7 @@ renderer.domElement.addEventListener('click', (event) => {
     // Calculate mouse position in normalized device coordinates
     mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
     mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
-    
+
     planetA.click(mouse, scene, camera);
     planetB.click(mouse, scene, camera);
     planetC.click(mouse, scene, camera);

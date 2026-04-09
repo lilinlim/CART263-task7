@@ -1,12 +1,14 @@
 import * as THREE from 'three';
+import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 //texture
 const loader = new THREE.TextureLoader();
-const planet_texture = await loader.load ("./textures/jupiter_texE.png");
+const planet_texture = await loader.load("./textures/jupiter_texE.png");
 planet_texture.colorSpace = THREE.SRGBColorSpace;
 
 const loader2 = new THREE.TextureLoader();
-const clouds_texture = await loader2.load ("./textures/8k_earth_clouds.png");
+const clouds_texture = await loader2.load("./textures/8k_earth_clouds.png");
 clouds_texture.colorSpace = THREE.SRGBColorSpace;
+
 
 // Planet class for Team C
 export class PlanetC {
@@ -28,16 +30,16 @@ export class PlanetC {
         //TODO: Add the planet mesh to the planet group.
         // https://www.solarsystemscope.com/textures/ // cool textures
         this.sphere = new THREE.Mesh(
-            new THREE.SphereGeometry(1.6, 32, 16 ),
-            new THREE.MeshBasicMaterial( {
+            new THREE.SphereGeometry(1.6, 32, 16),
+            new THREE.MeshBasicMaterial({
                 // color: 0x7FFFD4,
                 map: planet_texture
             })
         )
         // add clouds effect?
         this.cloud = new THREE.Mesh(
-            new THREE.SphereGeometry(1.7, 32, 16 ),
-            new THREE.MeshBasicMaterial( {
+            new THREE.SphereGeometry(1.7, 32, 16),
+            new THREE.MeshBasicMaterial({
                 // color: 0x7FFFD4,
                 map: clouds_texture,
                 transparent: true,
@@ -67,46 +69,114 @@ export class PlanetC {
         //creates 3 moons distict moons, colors, and orbit speeds and radii
         const loader = new THREE.TextureLoader();
         //CHANGE TEXTURE 
-        const moonTexture = loader.load('js/clouds.jpg');
-        moonTexture.colorSpace = THREE.SRGBColorSpace; // Set the color space to sRGB
+        // const moonTexture = loader.load('js/clouds.jpg');
+        // moonTexture.colorSpace = THREE.SRGBColorSpace; // Set the color space to sRGB
+        //create 3 different moons with set geometries, materials, orbit speeds and radii
+        this.moon1 = new THREE.Mesh(
+            new THREE.SphereGeometry(0.3, 16, 8),
+            new THREE.MeshStandardMaterial({ color: 'pink' })
+        );
+        this.moon1.userData = { orbitRadius: 3, orbitSpeed: 0.02, angle: Math.PI * 2 };
+        this.group.add(this.moon1);
 
-        for (let i = 0; i < 3; i++) {
-            const moonGeometry = new THREE.SphereGeometry(0.3 + Math.random() * 0.2, 16, 16);
-            //use the texture map with a neutral base color so moons do not become too dark
-            const moonMaterial = new THREE.MeshStandardMaterial({
-                map: moonTexture,
-                color: 0xffffff,
-                roughness: 0.8,
-                metalness: 0.0,
-                emissive: 0x222222,
-                emissiveIntensity: 0.35
-            });
-            //creates the moon mesh and sets it to cast and receive shadows
-            const moon = new THREE.Mesh(moonGeometry, moonMaterial);
-            //sets the moon to cast and receive shadows
-            moon.castShadow = true;
-            //sets the moon to receive shadows
-            moon.receiveShadow = true;
-            //sets random orbit and radius for the moon
-            const moonOrbitRadius = 2 + Math.random() * 1;
-            //sets random orbit speed for the moon
-            const moonOrbitSpeed = 0.5 + Math.random() * 0.5;
-            //stores the moon's orbit radius, speed, and initial angle in userData for use in the update method
-            moon.userData = { orbitRadius: moonOrbitRadius, orbitSpeed: moonOrbitSpeed, angle: Math.random() * Math.PI * 2 };
-            this.group.add(moon);
-        } // make the moons orbit around the planet in the update method 
-        //make moons cast a shadoe on the planet
-        this.group.children.forEach(child => {
-            if (child !== this.sphere) {
-                child.castShadow = true;
-                child.receiveShadow = true;
-            }
-        }); // we make the moons orbit around the planet in the update method 
+        this.moon2 = new THREE.Mesh(
+            new THREE.SphereGeometry(0.2, 16, 8),
+            new THREE.MeshStandardMaterial({ color: 'lightgreen' })
+        );
+        this.moon2.userData = { orbitRadius: 2, orbitSpeed: 0.5, angle: Math.PI * 2 };
+        this.group.add(this.moon2);
 
+        this.moon3 = new THREE.Mesh(
+            new THREE.SphereGeometry(0.25, 16, 8),
+            new THREE.MeshStandardMaterial({ color: 'darkgray' })
+        );
+        this.moon3.userData = { orbitRadius: 4, orbitSpeed: 0.2, angle: Math.PI * 2 };
+        this.group.add(this.moon3);
+
+        //illuminate the moons with a point light at the center of the planet
+        const pointLight = new THREE.PointLight(0xffffff, 1, 10);
+        pointLight.position.set(0, 0, 0);
+        this.group.add(pointLight);
 
         //STEP 3:
         //TODO: Load Blender models to populate the planet with multiple props and critters by adding them to the planet group.
         //TODO: Make sure to rotate the models so they are oriented correctly relative to the surface of the planet.
+        //3d model from:https://www.cgtrader.com/items/2595751/download-page
+
+        const loader3 = new FBXLoader();
+        loader3.load('js/models/UFO_Model.fbx', (object) => {
+            //orient the model correctly to planet surface
+            object.rotation.x = 0; //rotation around the X-axis
+            object.rotation.y = Math.PI * 2; //rotation around the Y-axis
+            object.rotation.z = Math.PI * 2; // rotation around the Z-axis
+
+            //set constant scale size of model
+            const scale = 0.002; // Adjust the scale as needed
+            object.scale.set(scale, scale, scale);
+            // Position on the planet surface 
+            const radius = 2.2; // planet radius
+            //random position on the planet surface using spherical coordinates
+            const theta = Math.PI * 2;
+            const phi = Math.acos(1);
+            object.position.set(
+                radius * Math.sin(phi) * Math.cos(theta),
+                radius * Math.cos(phi),
+                radius * Math.sin(phi) * Math.sin(theta)
+            );
+
+            // Store reference to the model for animation
+            this.model = object;
+            this.originalY = object.position.y;
+            this.bounceTime = 0;
+
+            // Add to planet group instead of scene
+            this.group.add(object);
+        });
+
+        //load another model:https://www.cgtrader.com/items/2983439/download-page
+        loader3.load('js/models/simple_cow.fbx', (object) => {
+            //orient the model correctly to planet surface
+            object.rotation.x = 0; //rotation around the X-axis
+            object.rotation.y = 100; //rotation around the Y-axis
+            object.rotation.z = 0.75; // rotation around the Z-axis
+
+
+            // Position the cow on the planet surface
+            const radius = 1.5;
+            const theta = Math.PI; // different position
+            const phi = Math.acos(0.5);
+            object.position.set(
+                radius * Math.sin(phi) * Math.cos(theta),
+                radius * Math.cos(phi),
+                radius * Math.sin(phi) * Math.sin(theta)
+            );
+
+            // Scale and add to group
+            object.scale.set(0.001, 0.001, 0.001);
+            this.group.add(object);
+
+        });
+        //duplicate the cow model and place it in a different location on the planet
+        loader3.load('js/models/simple_cow.fbx', (object) => {
+            //orient the model correctly to planet surface
+            object.rotation.x = 0; //rotation around the X-axis
+            object.rotation.y = 90; //rotation around the Y-axis
+            object.rotation.z = 90; // rotation around the Z-axis
+
+            // Position the second cow on the planet surface at a different location
+            const radius = 1.5;
+            const theta = Math.PI * 0.5; // different position (90 degrees around)
+            const phi = Math.acos(-0.3);
+            object.position.set(
+                radius * Math.sin(phi) * Math.cos(theta),
+                radius * Math.cos(phi),
+                radius * Math.sin(phi) * Math.sin(theta)
+            );
+
+            // Scale and add to group
+            object.scale.set(0.001, 0.001, 0.001);
+            this.group.add(object);
+        });
 
         //STEP 4:
         //TODO: Use raycasting in the click() method below to detect clicks on the models, and make an animation happen when a model is clicked.
@@ -124,6 +194,13 @@ export class PlanetC {
         // Rotate planet
         this.group.rotation.y += delta * 0.5;
 
+        // Animate model bounce if active
+        if (this.model && this.bounceTime > 0) {
+            this.model.position.y = this.originalY + Math.sin(this.bounceTime * 4) * 0.3; // bounce up and down
+            this.bounceTime -= delta * 3; // slow down over time
+            if (this.bounceTime < 0) this.bounceTime = 0; // stop
+        }
+
         //TODO: Do the moon orbits and the model animations here.
         //makes all the moons orbit around the planet
         this.group.children.forEach(child => {
@@ -137,8 +214,16 @@ export class PlanetC {
     }
 
     click(mouse, scene, camera) {
-        //TODO: Do the raycasting here.
-        
+        //Raycasting to detect clicks on the model
+        if (this.model) {
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObject(this.model, true); // check for intersection with the model and its children
+            if (intersects.length > 0) {
+                // Start bounce animation
+                this.bounceTime = Math.PI * 2; // about 2 seconds of bouncing
+            }
+        }
     }
 }
 
