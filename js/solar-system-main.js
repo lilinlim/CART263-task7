@@ -88,7 +88,7 @@ function animate(timer) {
     requestAnimationFrame(animate);
 
     const delta = 0.001 * (timer - elapsedTime);
-    console.log(delta)
+    //console.log(delta)
     elapsedTime = timer;
 
     // Update sun

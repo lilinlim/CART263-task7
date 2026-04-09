@@ -6,9 +6,20 @@ const planet_texture = await loader.load("./textures/jupiter_texE.png");
 planet_texture.colorSpace = THREE.SRGBColorSpace;
 
 const loader2 = new THREE.TextureLoader();
-const clouds_texture = await loader2.load("./textures/8k_earth_clouds.png");
+const clouds_texture = await loader2.load("./textures/8k_earth_clouds.jpg");
 clouds_texture.colorSpace = THREE.SRGBColorSpace;
 
+const loadMoon1 = new THREE.TextureLoader();
+const moon1_texture = await loadMoon1.load("./textures/Pinkmoon1.png");
+moon1_texture.colorSpace = THREE.SRGBColorSpace;
+
+const loadMoon2 = new THREE.TextureLoader();
+const moon2_texture = await loadMoon2.load("./textures/moon2.jpg");
+moon2_texture.colorSpace = THREE.SRGBColorSpace;
+
+const loadMoon3 = new THREE.TextureLoader();
+const moon3_texture = await loadMoon3.load("./textures/Tealmoon3.png");
+moon3_texture.colorSpace = THREE.SRGBColorSpace;
 
 // Planet class for Team C
 export class PlanetC {
@@ -43,7 +54,7 @@ export class PlanetC {
                 // color: 0x7FFFD4,
                 map: clouds_texture,
                 transparent: true,
-                opacity: 0.1
+                opacity: 0.3
             })
         )
         //add glow effect
@@ -54,6 +65,7 @@ export class PlanetC {
             opacity: 0.1
         })
         this.glow = new THREE.Mesh(this.glowSphere, this.glowMaterial);
+        //this.glow.castShadow = false;
         //add glow effect 2!!
         this.glowSphere2 = new THREE.SphereGeometry(1.9, 32, 16);
         this.glowMaterial2 = new THREE.MeshBasicMaterial({
@@ -62,6 +74,7 @@ export class PlanetC {
             opacity: 0.1
         })
         this.glow2 = new THREE.Mesh(this.glowSphere2, this.glowMaterial2);
+        //this.glow2.castShadow = false;
         //STEP 2: 
         //TODO: Add from 1 to 3 orbiting moons to the planet group. 
         //TODO: The moons should rotate around the planet just like the planet group rotates around the Sun.
@@ -74,21 +87,30 @@ export class PlanetC {
         //create 3 different moons with set geometries, materials, orbit speeds and radii
         this.moon1 = new THREE.Mesh(
             new THREE.SphereGeometry(0.3, 16, 8),
-            new THREE.MeshStandardMaterial({ color: 'pink' })
+            new THREE.MeshStandardMaterial({ 
+                //color: 'pink'
+                map: moon1_texture 
+            })
         );
         this.moon1.userData = { orbitRadius: 3, orbitSpeed: 0.02, angle: Math.PI * 2 };
         this.group.add(this.moon1);
 
         this.moon2 = new THREE.Mesh(
             new THREE.SphereGeometry(0.2, 16, 8),
-            new THREE.MeshStandardMaterial({ color: 'lightgreen' })
+            new THREE.MeshStandardMaterial({ 
+                // color: 'lightgreen'
+                map: moon3_texture
+            })
         );
         this.moon2.userData = { orbitRadius: 2, orbitSpeed: 0.5, angle: Math.PI * 2 };
         this.group.add(this.moon2);
 
         this.moon3 = new THREE.Mesh(
             new THREE.SphereGeometry(0.25, 16, 8),
-            new THREE.MeshStandardMaterial({ color: 'darkgray' })
+            new THREE.MeshStandardMaterial({ 
+                // color: 'darkgray' 
+                map: moon2_texture 
+            })
         );
         this.moon3.userData = { orbitRadius: 4, orbitSpeed: 0.2, angle: Math.PI * 2 };
         this.group.add(this.moon3);
@@ -220,6 +242,7 @@ export class PlanetC {
             raycaster.setFromCamera(mouse, camera);
             const intersects = raycaster.intersectObject(this.model, true); // check for intersection with the model and its children
             if (intersects.length > 0) {
+                console.log("intersected");
                 // Start bounce animation
                 this.bounceTime = Math.PI * 2; // about 2 seconds of bouncing
             }
